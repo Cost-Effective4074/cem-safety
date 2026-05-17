@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Safety Checklist — Cost Effective Maintenance</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f4f5f7;color:#111827;font-family:Arial,sans-serif;font-size:14px;min-height:100vh;}
+input,textarea,button,select{font-family:Arial,sans-serif;}
+.hdr{background:#fff;border-bottom:3px solid #e8420a;padding:14px 24px;display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.logo-block{display:flex;align-items:center;gap:12px;}
+.logo-block img{height:44px;width:auto;}
+.logo-text div{font-size:20px;font-weight:900;color:#1a2e5a;line-height:1.1;}
+.logo-sub{font-size:9px;color:#6b7280;letter-spacing:.08em;margin-top:4px;}
+.hdr-div{width:1px;background:#e5e7eb;height:48px;margin:0 6px;}
+.hdr-title{flex:1;}
+.hdr-eyebrow{font-size:9px;color:#1a2e5a;letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px;}
+.hdr-h1{font-size:28px;font-weight:900;color:#1a2e5a;text-transform:uppercase;line-height:1;}
+.hdr-h1 span{color:#e8420a;}
+.hdr-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+.mf{display:flex;flex-direction:column;gap:3px;}
+.mf label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.12em;}
+.mf input{background:#f9fafb;border:1px solid #dde1e9;color:#111827;font-size:12px;padding:5px 10px;border-radius:4px;outline:none;width:155px;}
+.mf input:focus{border-color:#e8420a;}
+.prog-wrap{background:#fff;border-bottom:1px solid #dde1e9;padding:10px 24px;display:flex;align-items:center;gap:14px;}
+.prog-track{flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1a9e52,#16a34a);border-radius:3px;transition:width .4s;}
+.pills{display:flex;gap:14px;}
+.pill-ct{font-size:11px;color:#6b7280;}
+.tabs{background:#fff;border-bottom:1px solid #dde1e9;padding:0 24px;display:flex;}
+.tab{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:11px 18px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;margin-bottom:-1px;}
+.tab.active{color:#e8420a;border-bottom-color:#e8420a;}
+.main{padding:22px 24px 60px;max-width:980px;}
+.panel{background:#fff;border:1px solid #dde1e9;border-radius:10px;padding:20px 22px;margin-bottom:18px;}
+.ptitle{font-size:17px;font-weight:900;text-transform:uppercase;color:#1a2e5a;margin-bottom:4px;}
+.psub{font-size:12px;color:#6b7280;margin-bottom:14px;line-height:1.5;}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px;}
+.staff-card{background:#f9fafb;border:1px solid #dde1e9;border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
+.staff-name-lbl{font-size:13px;font-weight:700;color:#1a2e5a;}
+.staff-rem{background:none;border:none;cursor:pointer;color:#9ca3af;font-size:17px;line-height:1;padding:0;}
+.staff-rem:hover{color:#dc2626;}
+.add-row{display:flex;gap:8px;}
+.add-row input{flex:1;max-width:230px;background:#f9fafb;border:1px solid #dde1e9;color:#111827;font-size:13px;padding:8px 12px;border-radius:6px;outline:none;}
+.add-row input:focus{border-color:#e8420a;}
+.add-row button{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:8px 18px;border-radius:6px;border:none;cursor:pointer;background:#1a2e5a;color:#fff;}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:5px;}
+.badge-ok{background:#f0fdf4;color:#1a9e52;border:1px solid #bbf7d0;}
+.badge-pend{background:#fef3c7;color:#d97706;border:1px solid #fde68a;}
+.section{margin-bottom:16px;border:1px solid #dde1e9;border-radius:8px;overflow:hidden;background:#fff;}
+.sec-hdr{background:#f0f2f5;padding:11px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #dde1e9;user-select:none;}
+.sec-hdr:hover{background:#e9ecf0;}
+.sec-icon{font-size:17px;width:26px;text-align:center;}
+.sec-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:#1a2e5a;flex:1;}
+.sec-tag{font-size:9px;letter-spacing:.12em;color:#e8420a;background:#fff3ef;padding:2px 7px;border-radius:8px;border:1px solid rgba(232,66,10,.2);}
+.chevron{color:#6b7280;font-size:12px;transition:transform .2s;}
+.collapsed .chevron{transform:rotate(-90deg);}
+.collapsed .items-wrap{display:none;}
+.item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:10px 16px;border-bottom:1px solid #dde1e9;border-left:3px solid transparent;}
+.item:last-child{border-bottom:none;}
+.item.s-ok{border-left-color:#1a9e52;background:#f0fdf4;}
+.item.s-warn{border-left-color:#d97706;background:#fffbeb;}
+.item.s-fail{border-left-color:#dc2626;background:#fef2f2;}
+.item.s-na{border-left-color:#9ca3af;opacity:.55;}
+.item-num{font-size:9px;color:#9ca3af;margin-bottom:2px;}
+.item-text{font-size:13px;color:#111827;line-height:1.4;font-weight:600;}
+.item-note{font-size:11px;color:#6b7280;margin-top:3px;font-style:italic;}
+.item-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.sbtns{display:flex;gap:3px;}
+.sbtn{font-size:9px;font-weight:700;padding:4px 8px;border-radius:4px;border:1px solid #dde1e9;cursor:pointer;background:#f9fafb;color:#9ca3af;transition:all .12s;}
+.sbtn.a-ok{background:#dcfce7;color:#1a9e52;border-color:#1a9e52;}
+.sbtn.a-warn{background:#fef3c7;color:#d97706;border-color:#d97706;}
+.sbtn.a-fail{background:#fee2e2;color:#dc2626;border-color:#dc2626;}
+.sbtn.a-na{background:#f3f4f6;color:#6b7280;border-color:#9ca3af;}
+.icmt{font-size:11px;background:#f9fafb;border:1px solid #dde1e9;border-radius:4px;color:#111827;padding:3px 6px;width:150px;resize:none;outline:none;min-height:26px;}
+.icmt:focus{border-color:#e8420a;}
+.icmt::placeholder{color:#9ca3af;font-style:italic;}
+.cmt-ta{width:100%;min-height:85px;background:#f9fafb;border:1px solid #dde1e9;border-radius:6px;color:#111827;font-size:13px;padding:10px 13px;resize:vertical;outline:none;line-height:1.6;display:block;margin-top:10px;}
+.cmt-ta:focus{border-color:#e8420a;}
+.cmt-ta::placeholder{color:#9ca3af;font-style:italic;}
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.score-card{border-radius:8px;padding:14px 16px;text-align:center;}
+.score-val{font-size:34px;font-weight:900;line-height:1;}
+.score-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+.actions-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.btn-accent{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:12px 26px;border-radius:6px;border:none;cursor:pointer;background:#e8420a;color:#fff;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-accent:hover{background:#c73208;}
+.btn-accent:disabled{background:#9ca3af;cursor:not-allowed;}
+.btn-navy{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:12px 22px;border-radius:6px;border:none;cursor:pointer;background:#1a2e5a;color:#fff;}
+.btn-navy:hover{background:#243e7a;}
+.btn-ghost{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:12px 22px;border-radius:6px;border:1px solid #dde1e9;cursor:pointer;background:#fff;color:#6b7280;}
+.btn-ghost:hover{border-color:#e8420a;color:#e8420a;}
+.result-box{border-radius:10px;padding:18px 22px;margin-top:16px;}
+.result-box.ok{background:#f0fdf4;border:2px solid #86efac;}
+.result-box.info{background:#eef2ff;border:2px solid #a5b4fc;}
+.result-box.err{background:#fef2f2;border:2px solid #fca5a5;}
+.result-title{font-size:18px;font-weight:900;text-transform:uppercase;margin-bottom:7px;}
+.result-box.ok .result-title{color:#1a9e52;}
+.result-box.info .result-title{color:#3730a3;}
+.result-box.err .result-title{color:#dc2626;}
+.result-body{font-size:13px;line-height:1.7;white-space:pre-wrap;}
+.result-box.ok .result-body{color:#166534;}
+.result-box.info .result-body{color:#1e1b4b;}
+.result-box.err .result-body{color:#991b1b;}
+.cu-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;margin-right:8px;font-size:13px;font-weight:700;text-transform:uppercase;padding:9px 20px;background:#1a2e5a;color:#fff;border-radius:6px;text-decoration:none;}
+.cu-link:hover{background:#243e7a;}
+.pend-warn{margin-top:10px;font-size:12px;color:#d97706;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;}
+.help-text{margin-top:10px;font-size:12px;color:#6b7280;line-height:1.6;}
+.sign-link-box{background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:18px 22px;margin-top:16px;}
+.sign-link-box h3{font-size:17px;font-weight:900;text-transform:uppercase;color:#1a9e52;margin-bottom:8px;}
+.sign-link-url{font-size:12px;background:#fff;border:1px solid #bbf7d0;border-radius:6px;padding:10px 14px;word-break:break-all;color:#166534;margin:10px 0;font-family:monospace;}
+.copy-btn{font-size:12px;font-weight:700;text-transform:uppercase;padding:6px 14px;border-radius:5px;border:none;cursor:pointer;background:#1a9e52;color:#fff;margin-right:8px;}
+.sig-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px;}
+.sig-status-card{border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.sig-status-card.signed{background:#f0fdf4;border:1px solid #bbf7d0;}
+.sig-status-card.pending{background:#fef3c7;border:1px solid #fde68a;}
+.sig-status-name{font-size:13px;font-weight:700;color:#1a2e5a;flex:1;}
+.sig-status-badge{font-size:11px;font-weight:700;}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media print{.tabs,.prog-wrap,.actions-row,.result-box,.add-row,.staff-rem,.sign-link-box{display:none!important;}.sbtns{display:none;}body{background:#fff;}.hdr{box-shadow:none;}.main{padding:14px 18px;}.icmt{border:1px solid #ccc;}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo-block">
+    <img src="https://costeffective.com.au/wp-content/uploads/2026/04/cemlogo-1.png" alt="CEM" onerror="this.style.display='none'">
+    <div class="logo-text">
+      <div>COST EFFECTIVE</div><div>MAINTENANCE</div>
+      <div class="logo-sub">ABN 59 635 953 301 · (07) 3376 6188</div>
+    </div>
+  </div>
+  <div class="hdr-div"></div>
+  <div class="hdr-title">
+    <div class="hdr-eyebrow">Unit 1 / 18 Boron St, Sumner Park QLD 4074</div>
+    <div class="hdr-h1">Weekly <span>Safety</span> Checklist</div>
+  </div>
+  <div class="hdr-meta">
+    <div class="mf"><label>Week Commencing</label><input type="date" id="weekDate"></div>
+    <div class="mf"><label>Completed By</label><input type="text" id="inspector" placeholder="Your full name"></div>
+    <div class="mf"><label>Shift / Area</label><input type="text" id="shift" placeholder="e.g. Day / Warehouse"></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <span style="font-size:11px;color:#6b7280">Completion</span>
+  <div class="prog-track"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+  <span style="font-size:11px;color:#e8420a;min-width:52px;text-align:right" id="pCt">0 / 0</span>
+  <div class="pills">
+    <span class="pill-ct">🟢 <span id="ctOk">0</span> OK</span>
+    <span class="pill-ct">🟡 <span id="ctWarn">0</span> Action</span>
+    <span class="pill-ct">🔴 <span id="ctFail">0</span> Fail</span>
+    <span class="pill-ct">⬜ <span id="ctNa">0</span> N/A</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" id="tab-checklist" onclick="showTab('checklist')">📋 Checklist</button>
+  <button class="tab" id="tab-staff" onclick="showTab('staff')">👷 Staff (<span id="sigTabCount">0/0</span>)</button>
+  <button class="tab" id="tab-submit" onclick="showTab('submit')">✅ Submit</button>
+</div>
+
+<div class="main">
+  <div id="tab-content-checklist"></div>
+
+  <div id="tab-content-staff" style="display:none">
+    <div class="panel">
+      <div class="ptitle">👷 Staff Working This Week</div>
+      <div class="psub">Add everyone working this week. After you submit the checklist to ClickUp, a signing link is generated — paste it into the ClickUp task so each person can sign on their own PC.</div>
+      <div class="staff-grid" id="staffGrid"><div style="font-size:12px;color:#9ca3af">No staff added yet.</div></div>
+      <div class="add-row">
+        <input type="text" id="newName" placeholder="Staff member name…" onkeydown="if(event.key==='Enter')addStaff()">
+        <button onclick="addStaff()">+ Add</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">💬 General Comments</div>
+      <div class="psub">Record anything not covered by the checklist items above.</div>
+      <textarea class="cmt-ta" id="genCmt" placeholder="Additional observations, incidents, near-misses, or notes…"></textarea>
+    </div>
+  </div>
+
+  <div id="tab-content-submit" style="display:none">
+    <div class="panel">
+      <div class="ptitle">📊 Checklist Summary</div>
+      <div class="score-grid">
+        <div class="score-card" style="background:#f0fdf4;border:1px solid #bbf7d0"><div class="score-val" style="color:#1a9e52" id="sumOk">0</div><div class="score-lbl" style="color:#1a9e52">✔ OK</div></div>
+        <div class="score-card" style="background:#fffbeb;border:1px solid #fde68a"><div class="score-val" style="color:#d97706" id="sumWarn">0</div><div class="score-lbl" style="color:#d97706">⚠ Actions</div></div>
+        <div class="score-card" style="background:#fef2f2;border:1px solid #fecaca"><div class="score-val" style="color:#dc2626" id="sumFail">0</div><div class="score-lbl" style="color:#dc2626">✘ Fails</div></div>
+        <div class="score-card" style="background:#f3f4f6;border:1px solid #e5e7eb"><div class="score-val" style="color:#6b7280" id="sumNa">0</div><div class="score-lbl" style="color:#6b7280">— N/A</div></div>
+      </div>
+      <div style="font-size:11px;color:#6b7280" id="sumMeta"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Submit to ClickUp</div>
+      <div class="actions-row">
+        <button class="btn-accent" id="subBtn" onclick="submitToClickUp()">✅ Submit to ClickUp</button>
+        <button class="btn-ghost" onclick="window.print()">🖨 Print</button>
+        <button class="btn-ghost" onclick="resetAll()">↺ Reset</button>
+      </div>
+      <div class="help-text">Once submitted, a <strong>signing link</strong> will appear below. Paste it into the ClickUp task — each staff member opens the link on their own PC and signs their name. ClickUp updates in real time as each person signs.</div>
+    </div>
+    <div id="resultBox"></div>
+    <div id="signLinkBox" style="display:none" class="sign-link-box">
+      <h3>🔗 Signing Link — Paste this into ClickUp</h3>
+      <p style="font-size:13px;color:#166534;margin-bottom:6px">Share this link with all staff. Each person opens it on their own PC, selects their name, and signs. No login required.</p>
+      <div class="sign-link-url" id="signLinkUrl"></div>
+      <button class="copy-btn" onclick="copySignLink()">📋 Copy Link</button>
+      <button class="copy-btn" style="background:#1a2e5a" onclick="copyClickUpComment()">📌 Copy ClickUp Comment</button>
+      <div style="margin-top:16px;font-size:13px;font-weight:700;color:#1a2e5a;margin-bottom:8px">Signature Status (refresh to update)</div>
+      <div class="sig-status-grid" id="sigStatusGrid"></div>
+      <button class="btn-navy" style="margin-top:14px" onclick="refreshSigStatus()">↻ Refresh Signature Status</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOKEN   = 'pk_94846556_AMDUSYO093WC20PMCHMUWMWZFGQ16VZ5';
+const LIST_ID = '901614940827';
+const API     = 'https://api.clickup.com/api/v2';
+// GitHub Pages base URL — update this after you set up GitHub Pages
+const SIGN_BASE = 'https://YOUR-USERNAME.github.io/cem-safety/sign.html';
+
+const SECTIONS = [
+  {id:'emergency',icon:'🚨',name:'Emergency Preparedness',tag:'CRITICAL — CHECK FIRST',items:[
+    {t:'Emergency exits clear and unobstructed',n:'All exit routes free of stock, drums, and equipment'},
+    {t:'Emergency assembly point signage visible and accessible',n:''},
+    {t:'Fire extinguishers in place, tagged, and within service date',n:'Check all extinguishers in production, warehouse, DG store'},
+    {t:'Fire hose reels / suppression systems unobstructed',n:''},
+    {t:'Eye wash station(s) functional and unobstructed',n:'Flush for 30 seconds to confirm flow'},
+    {t:'Safety shower functional and unobstructed',n:''},
+    {t:'Spill kits stocked and located at chemical handling areas',n:'Check absorbent, gloves, bags are present'},
+    {t:'First aid kit stocked and within expiry',n:'Log any items removed during the week'},
+    {t:'Emergency contact numbers posted at entry / phone station',n:'Fire, Ambulance, Poison Info Centre 13 11 26, Site Manager'},
+    {t:'Emergency procedures document current and accessible',n:''},
+  ]},
+  {id:'chemicals',icon:'⚗️',name:'Hazardous Chemicals & Dangerous Goods',tag:'WHS REGS DIV 3',items:[
+    {t:'Hazardous Chemical Register current and accessible',n:'SDS not older than 5 years'},
+    {t:'All SDS accessible at point of use for chemicals in use this week',n:''},
+    {t:'All chemical containers correctly labelled (GHS labels, product name, hazard info)',n:'Check decanted/smaller containers especially'},
+    {t:'DG container — contents stored per DG segregation chart',n:'White Spirits, Setal 50, Solvesso 100, Butanol (all Class 3)'},
+    {t:'DG container bunding intact and free of liquid accumulation',n:''},
+    {t:'DG container ventilation functional and unobstructed',n:'Flammable liquids require ventilation to prevent vapour build-up'},
+    {t:'DG container — correct placards displayed externally',n:''},
+    {t:'No empty/unlabelled containers left in storage or work areas',n:'Dispose per SDS requirements'},
+    {t:'Ignition sources absent from DG / flammable storage zones',n:'No open flames, no spark-producing tools, no electrical equipment inside DG area'},
+  ]},
+  {id:'ppe',icon:'🦺',name:'Personal Protective Equipment (PPE)',tag:'WHS REGS S44',items:[
+    {t:'PPE station(s) stocked — gloves, safety glasses, face shields available',n:'Nitrile gloves required as minimum for chemical handling'},
+    {t:'Respiratory protection available and within service life',n:'Half-face respirators with correct cartridges for VOCs / organic vapours'},
+    {t:'Safety footwear being worn by all personnel on site',n:'Steel-capped, chemical-resistant where applicable'},
+    {t:'PPE appropriate to tasks this week confirmed with workers',n:''},
+    {t:'Used/contaminated PPE disposed of or sent for laundering — NOT left in amenities',n:''},
+  ]},
+  {id:'fixedplant',icon:'⚙️',name:'Fixed Plant & Manufacturing Equipment',tag:'WHS REGS CH 5',items:[
+    {t:'All fixed plant guards/covers in place and secured before operation',n:'Mixing tanks, pumps, conveyors — no bypassed guarding'},
+    {t:'Pipe and hose connections — no leaks, crimps, or abrasion wear',n:'Check transfer hoses for fuel/oil additive batching'},
+    {t:'Pumps and valves operating correctly; no unusual vibration or noise',n:''},
+    {t:'Electrical switchboard / panel areas clear of stored items',n:'Minimum 1m clearance required'},
+    {t:'Electrical equipment (leads, tools, boards) — test-and-tag current',n:'Remove any expired or damaged equipment from service immediately'},
+    {t:'No unauthorised modifications to plant or equipment',n:''},
+  ]},
+  {id:'forklift',icon:'🏗️',name:'Forklift & Materials Handling',tag:'WHS REGS S223',items:[
+    {t:'Forklift pre-start checklist completed by licensed operator (daily)',n:'Tyres, forks, mast, brakes, horn, lights — confirm log signed'},
+    {t:'Pedestrian exclusion zones enforced in forklift operating areas',n:'No foot traffic in aisle without forklift stopped'},
+    {t:'Chemical drums / IBC loads secured and within rated capacity before lift',n:'Check SWL on forks'},
+    {t:'Damaged pallets removed from service — not used for chemical drum storage',n:''},
+  ]},
+  {id:'manual',icon:'💪',name:'Manual Handling',tag:'COP HAZARDOUS MANUAL TASKS',items:[
+    {t:'Mechanical aids available for heavy chemical drums',n:'Drums >20kg must not be manually lifted without two-person lift or mechanical aid'},
+    {t:'Workers aware of correct manual handling technique',n:'Bend knees, not back; load close to body; do not twist while carrying'},
+    {t:'No worker performing repetitive lifting over 16kg without job rotation or aid',n:''},
+    {t:'Work surfaces and access areas at correct ergonomic height where possible',n:''},
+  ]},
+  {id:'housekeeping',icon:'🧹',name:'Housekeeping & General Safety',tag:'DAILY STANDARD',items:[
+    {t:'Production and warehouse floors clean and dry — no spill residue',n:'Chemical spill residues create slip hazard AND potential reactive hazard'},
+    {t:'Walkways, aisles, and racking access unobstructed',n:''},
+    {t:'Bins and waste containers not overflowing; chemical waste segregated',n:''},
+    {t:'Lighting adequate in all work and storage areas',n:'Replace any failed lighting immediately'},
+    {t:'No smoking signs posted and enforced throughout facility',n:'Mandatory given Class 3 flammable liquids on site'},
+    {t:'Amenities (lunchroom, toilets, change areas) maintained in hygienic condition',n:''},
+    {t:'Signage in good condition — hazard, DG class, directional, emergency',n:''},
+    {t:'External areas, loading dock, and drains clear of chemical contamination',n:'Prevent runoff to stormwater — environmental obligation under EP Act'},
+  ]},
+];
+
+let ST={}, CM={}, staff=[], currentTaskId=null;
+const ik=(s,i)=>s+'_'+i;
+
+function showTab(name){
+  ['checklist','staff','submit'].forEach(t=>{
+    document.getElementById('tab-content-'+t).style.display=t===name?'block':'none';
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+  });
+  if(name==='submit') updateSummary();
+}
+
+function buildChecklist(){
+  let html='';
+  SECTIONS.forEach((sec,si)=>{
+    html+=`<div class="section" id="sec-${si}"><div class="sec-hdr" onclick="toggleSec(${si})">
+      <span class="sec-icon">${sec.icon}</span><span class="sec-name">${sec.name}</span>
+      <span class="sec-tag">${sec.tag}</span><span class="chevron">▾</span>
+    </div><div class="items-wrap">`;
+    sec.items.forEach((item,ii)=>{
+      const k=ik(si,ii);
+      html+=`<div class="item" id="item-${k}">
+        <div><div class="item-num">${sec.id.toUpperCase()}-${String(ii+1).padStart(2,'0')}</div>
+        <div class="item-text">${item.t}</div>${item.n?`<div class="item-note">${item.n}</div>`:''}</div>
+        <div class="item-right"><div class="sbtns">
+          <button class="sbtn" id="b-${k}-ok"   onclick="setST(${si},${ii},'ok')">OK</button>
+          <button class="sbtn" id="b-${k}-warn" onclick="setST(${si},${ii},'warn')">ACTION</button>
+          <button class="sbtn" id="b-${k}-fail" onclick="setST(${si},${ii},'fail')">FAIL</button>
+          <button class="sbtn" id="b-${k}-na"   onclick="setST(${si},${ii},'na')">N/A</button>
+        </div>
+        <textarea class="icmt" id="cmt-${k}" placeholder="Comment…" rows="1" oninput="CM['${k}']=this.value"></textarea>
+        </div></div>`;
+    });
+    html+=`</div></div>`;
+  });
+  document.getElementById('tab-content-checklist').innerHTML=html;
+}
+
+function toggleSec(i){document.getElementById('sec-'+i).classList.toggle('collapsed');}
+
+function setST(si,ii,val){
+  const k=ik(si,ii); ST[k]=val;
+  document.getElementById('item-'+k).className='item s-'+val;
+  ['ok','warn','fail','na'].forEach(x=>{
+    document.getElementById('b-'+k+'-'+x).className='sbtn'+(val===x?' a-'+x:'');
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const total=SECTIONS.reduce((a,s)=>a+s.items.length,0);
+  const done=Object.values(ST).filter(Boolean).length;
+  const c={ok:0,warn:0,fail:0,na:0};
+  Object.values(ST).forEach(v=>{if(c[v]!==undefined)c[v]++;});
+  document.getElementById('pFill').style.width=(total?done/total*100:0)+'%';
+  document.getElementById('pCt').textContent=done+' / '+total;
+  ['ok','warn','fail','na'].forEach(x=>document.getElementById('ct'+x.charAt(0).toUpperCase()+x.slice(1)).textContent=c[x]);
+}
+
+function addStaff(){
+  const inp=document.getElementById('newName');
+  const name=inp.value.trim(); if(!name)return;
+  if(staff.includes(name)){inp.value='';return;}
+  staff.push(name); inp.value='';
+  renderStaff();
+}
+function removeStaff(name){staff=staff.filter(s=>s!==name);renderStaff();}
+function renderStaff(){
+  const g=document.getElementById('staffGrid');
+  if(!staff.length){g.innerHTML='<div style="font-size:12px;color:#9ca3af">No staff added yet.</div>';return;}
+  g.innerHTML=staff.map(s=>`<div class="staff-card">
+    <span class="staff-name-lbl">👤 ${s}</span>
+    <button class="staff-rem" onclick="removeStaff('${s.replace(/'/g,"\\'")}')">×</button>
+  </div>`).join('');
+  document.getElementById('sigTabCount').textContent='0/'+staff.length;
+}
+
+function updateSummary(){
+  const total=SECTIONS.reduce((a,s)=>a+s.items.length,0);
+  const done=Object.values(ST).filter(Boolean).length;
+  const c={ok:0,warn:0,fail:0,na:0};
+  Object.values(ST).forEach(v=>{if(c[v]!==undefined)c[v]++;});
+  ['ok','warn','fail','na'].forEach(x=>document.getElementById('sum'+x.charAt(0).toUpperCase()+x.slice(1)).textContent=c[x]);
+  const week=document.getElementById('weekDate').value;
+  const insp=document.getElementById('inspector').value.trim();
+  document.getElementById('sumMeta').textContent=`${done}/${total} items answered · ${staff.length} staff · Week: ${week||'(not set)'} · By: ${insp||'(not set)'}`;
+}
+
+async function submitToClickUp(){
+  const insp=document.getElementById('inspector').value.trim();
+  const week=document.getElementById('weekDate').value;
+  const shift=document.getElementById('shift').value.trim()||'Not specified';
+  const gc=document.getElementById('genCmt').value.trim();
+  if(!insp||!week){alert('Please enter your name and week commencing date.');return;}
+
+  const total=SECTIONS.reduce((a,s)=>a+s.items.length,0);
+  const done=Object.values(ST).filter(Boolean).length;
+  const c={ok:0,warn:0,fail:0,na:0};
+  Object.values(ST).forEach(v=>{if(c[v]!==undefined)c[v]++;});
+  const fails=[],warns=[];
+  SECTIONS.forEach((sec,si)=>sec.items.forEach((item,ii)=>{
+    const k=ik(si,ii),s=ST[k],cm=CM[k]||'';
+    if(s==='fail')fails.push({section:sec.name,item:item.t,comment:cm});
+    if(s==='warn')warns.push({section:sec.name,item:item.t,comment:cm});
+  }));
+
+  const sl=c.fail>0?'🔴 FAIL':c.warn>0?'🟡 ACTIONS':'✅ ALL CLEAR';
+  const ws=new Date(week+'T00:00:00');
+  const due=new Date(ws);due.setDate(ws.getDate()+(7-ws.getDay()));
+  const pending=total-done;
+
+  let desc=`${c.fail>0?'🔴':c.warn>0?'🟡':'✅'} **WEEKLY SAFETY CHECKLIST**\n${'━'.repeat(38)}\n\n`;
+  desc+=`**Completed By:** ${insp}\n**Week:** ${week}\n**Shift:** ${shift}\n**Submitted:** ${new Date().toLocaleString('en-AU')}\n`;
+  if(staff.length)desc+=`**Staff:** ${staff.join(', ')}\n`;
+  desc+=`\n**SCORE:** ✔${c.ok} ⚠${c.warn} ✘${c.fail} —${c.na} ○${pending}/${total}\n\n`;
+  if(fails.length){desc+=`🔴 **FAILS (${fails.length})**\n`;fails.forEach((f,i)=>{desc+=`${i+1}. [${f.section}]\n   ${f.item}\n`;if(f.comment)desc+=`   📝 ${f.comment}\n`;desc+='\n';});}
+  if(warns.length){desc+=`🟡 **ACTIONS (${warns.length})**\n`;warns.forEach((w,i)=>{desc+=`${i+1}. [${w.section}]\n   ${w.item}\n`;if(w.comment)desc+=`   📝 ${w.comment}\n`;desc+='\n';});}
+  if(!fails.length&&!warns.length)desc+=`✅ All items cleared.\n\n`;
+  if(gc)desc+=`💬 **GENERAL COMMENTS**\n${gc}\n\n`;
+  desc+=`📋 **FULL CHECKLIST**\n${'━'.repeat(38)}\n\n`;
+  SECTIONS.forEach(sec=>{
+    desc+=`**${sec.icon} ${sec.name.toUpperCase()}**\n`;
+    sec.items.forEach((item,ii)=>{
+      const k=ik(SECTIONS.indexOf(sec),ii),s=ST[k];
+      const lb=s==='ok'?'✔ OK':s==='warn'?'⚠ ACT':s==='fail'?'✘ FAIL':s==='na'?'— N/A':'○';
+      desc+=`  ${String(ii+1).padStart(2,'0')}. [${lb}] ${item.t}\n`;
+      if(CM[k])desc+=`      💬 ${CM[k]}\n`;
+    });
+    desc+='\n';
+  });
+  desc+=`✍️ **SIGNATURES** — Pending\n${staff.map(s=>`${s}: ⏳ Pending`).join('\n')}\n`;
+  desc+=`\n_Cost Effective Maintenance · (07) 3376 6188_`;
+
+  const btn=document.getElementById('subBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Submitting…';
+
+  try{
+    const r=await fetch(`${API}/list/${LIST_ID}/task`,{
+      method:'POST',
+      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:`Safety Checklist — ${week} — ${insp} — ${sl}`,
+        description:desc,
+        priority:c.fail>0?1:c.warn>0?2:3,
+        due_date:due.getTime(),due_date_time:false,
+        tags:c.fail>0?['safety','fail']:c.warn>0?['safety','action']:['safety','clear'],
+      })
+    });
+    const res=await r.json();
+    if(!r.ok)throw new Error(res.err||res.error||'HTTP '+r.status);
+    currentTaskId=res.id;
+    const taskUrl=res.url||'https://app.clickup.com/t/'+res.id;
+
+    // Build signing link
+    const staffParam=encodeURIComponent(staff.join(','));
+    const weekParam=encodeURIComponent(week);
+    const inspParam=encodeURIComponent(insp);
+    const signUrl=`${SIGN_BASE}?task=${res.id}&week=${weekParam}&inspector=${inspParam}&staff=${staffParam}`;
+
+    // Post comment with signing link
+    const commentText=`✍️ **ACTION REQUIRED — Please sign the weekly safety checklist**\n\nWeek of ${week} · Completed by ${insp}\n\n**Click the link below to sign on your own PC — no login required:**\n${signUrl}\n\nStaff who need to sign:\n${staff.map(s=>`• ${s} — ⏳ Pending`).join('\n')}\n\n_Signatures will update in ClickUp as each person signs._`;
+    await fetch(`${API}/task/${res.id}/comment`,{
+      method:'POST',
+      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify({comment_text:commentText,notify_all:true})
+    });
+
+    btn.disabled=false; btn.innerHTML='✅ Submitted!';
+
+    // Show result
+    document.getElementById('resultBox').innerHTML=`<div class="result-box ok">
+      <div class="result-title">✅ Submitted to ClickUp!</div>
+      <div class="result-body">Score: ${c.ok} OK · ${c.warn} Actions · ${c.fail} Fails · ${c.na} N/A${c.fail>0?'\n⚠ FAIL items — urgent review required.':''}</div>
+      <a class="cu-link" href="${taskUrl}" target="_blank">🔗 Open Task in ClickUp</a>
+    </div>`;
+
+    // Show signing link box
+    document.getElementById('signLinkUrl').textContent=signUrl;
+    document.getElementById('signLinkBox').style.display='block';
+    renderSigStatus(staff.map(s=>({name:s,signed:false})));
+
+  }catch(err){
+    btn.disabled=false; btn.innerHTML='✅ Submit to ClickUp';
+    document.getElementById('resultBox').innerHTML=`<div class="result-box err">
+      <div class="result-title">❌ Submission Failed</div>
+      <div class="result-body">${err.message}\n\nCheck your internet connection and try again.</div>
+    </div>`;
+  }
+}
+
+function renderSigStatus(statusList){
+  document.getElementById('sigStatusGrid').innerHTML=statusList.map(s=>`
+    <div class="sig-status-card ${s.signed?'signed':'pending'}">
+      <span style="font-size:18px">${s.signed?'✅':'⏳'}</span>
+      <div><div class="sig-status-name">${s.name}</div>
+      <div class="sig-status-badge" style="color:${s.signed?'#1a9e52':'#d97706'}">${s.signed?'Signed':'Pending'}</div></div>
+    </div>`).join('');
+  const sc=statusList.filter(s=>s.signed).length;
+  document.getElementById('sigTabCount').textContent=sc+'/'+statusList.length;
+}
+
+async function refreshSigStatus(){
+  if(!currentTaskId)return;
+  try{
+    const r=await fetch(`${API}/task/${currentTaskId}`,{headers:{'Authorization':TOKEN}});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.err);
+    const desc=d.description||'';
+    const sigSection=desc.match(/✍️ \*\*SIGNATURES\*\*([\s\S]*?)(?:\n_Cost|$)/);
+    const statusList=staff.map(name=>{
+      if(!sigSection)return{name,signed:false};
+      const signed=sigSection[1].includes(name+': ✅');
+      return{name,signed};
+    });
+    renderSigStatus(statusList);
+  }catch(e){alert('Could not refresh: '+e.message);}
+}
+
+function copySignLink(){
+  const url=document.getElementById('signLinkUrl').textContent;
+  navigator.clipboard.writeText(url).then(()=>alert('Signing link copied! Paste it into the ClickUp task.'));
+}
+
+function copyClickUpComment(){
+  const url=document.getElementById('signLinkUrl').textContent;
+  const week=document.getElementById('weekDate').value;
+  const insp=document.getElementById('inspector').value.trim();
+  const text=`✍️ ACTION REQUIRED — Please sign the weekly safety checklist\n\nWeek of ${week} · Completed by ${insp}\n\nClick this link to sign on your own PC:\n${url}\n\nStaff: ${staff.join(', ')}`;
+  navigator.clipboard.writeText(text).then(()=>alert('Comment copied! Paste it into ClickUp.'));
+}
+
+function resetAll(){
+  if(!confirm('Reset everything?'))return;
+  ST={}; CM={}; staff=[]; currentTaskId=null;
+  document.getElementById('genCmt').value='';
+  document.getElementById('weekDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('inspector').value='';
+  document.getElementById('shift').value='';
+  document.getElementById('resultBox').innerHTML='';
+  document.getElementById('signLinkBox').style.display='none';
+  renderStaff(); updateProgress(); buildChecklist(); showTab('checklist');
+}
+
+document.getElementById('weekDate').value=new Date().toISOString().split('T')[0];
+buildChecklist();
+</script>
+</body>
+</html>

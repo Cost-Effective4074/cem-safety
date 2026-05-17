@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Safety Checklist — Cost Effective Maintenance</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f4f5f7;color:#111827;font-family:Arial,sans-serif;font-size:14px;min-height:100vh;}
+.hdr{background:#fff;border-bottom:3px solid #e8420a;padding:14px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.logo-block{display:flex;align-items:center;gap:12px;}
+.logo-block img{height:42px;width:auto;}
+.logo-text div{font-size:18px;font-weight:900;color:#1a2e5a;line-height:1.1;}
+.logo-sub{font-size:9px;color:#6b7280;letter-spacing:.08em;margin-top:4px;}
+.hdr-div{width:1px;background:#e5e7eb;height:44px;margin:0 6px;}
+.hdr-info{flex:1;}
+.hdr-eyebrow{font-size:9px;color:#1a2e5a;letter-spacing:.15em;text-transform:uppercase;margin-bottom:2px;}
+.hdr-title{font-size:22px;font-weight:900;color:#1a2e5a;text-transform:uppercase;line-height:1;}
+.hdr-title span{color:#e8420a;}
+.ybanner{background:#fef9c3;border-bottom:2px solid #fde047;padding:12px 24px;font-size:13px;color:#854d0e;font-weight:600;}
+.main{max-width:680px;margin:24px auto;padding:0 20px 60px;}
+.card{background:#fff;border:1px solid #dde1e9;border-radius:10px;padding:20px 22px;margin-bottom:16px;}
+.ctitle{font-size:17px;font-weight:900;text-transform:uppercase;color:#1a2e5a;margin-bottom:10px;letter-spacing:.03em;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ml{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:2px;}
+.mv{font-size:13px;font-weight:700;color:#1a2e5a;}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;}
+.select-wrap{margin-bottom:18px;}
+.select-wrap label{font-size:13px;font-weight:700;color:#1a2e5a;display:block;margin-bottom:8px;}
+.name-select{width:100%;background:#f9fafb;border:2px solid #dde1e9;color:#111827;font-size:14px;padding:10px 14px;border-radius:8px;outline:none;cursor:pointer;}
+.name-select:focus{border-color:#e8420a;}
+.sig-box{border:1px solid #dde1e9;border-radius:8px;padding:16px 18px;background:#f9fafb;margin-bottom:16px;transition:all .2s;}
+.sig-box.signed{background:#f0fdf4;border-color:#86efac;}
+.sig-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:7px;display:block;}
+.sig-box.signed .sig-lbl{color:#1a9e52;}
+.sig-person{font-size:14px;font-weight:700;color:#1a2e5a;margin-bottom:10px;}
+.sig-wrap{position:relative;}
+.sig-inp{width:100%;background:transparent;border:none;border-bottom:2px solid #dde1e9;color:#111827;font-size:16px;font-style:italic;padding:6px 28px 6px 0;outline:none;transition:border-color .2s;}
+.sig-inp:focus{border-bottom-color:#e8420a;}
+.sig-box.signed .sig-inp{border-bottom-color:#1a9e52;color:#1a9e52;}
+.sig-tick{display:none;position:absolute;right:2px;bottom:5px;font-size:18px;}
+.sig-box.signed .sig-tick{display:block;}
+.sig-hint{font-size:11px;color:#9ca3af;margin-top:6px;font-style:italic;}
+.sig-box.signed .sig-hint{display:none;}
+.match-label{font-size:11px;color:#1a9e52;font-weight:700;margin-top:4px;display:none;}
+.match-label.show{display:block;}
+.btn{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:14px 32px;border-radius:8px;border:none;cursor:pointer;background:#e8420a;color:#fff;transition:all .2s;display:inline-flex;align-items:center;gap:8px;width:100%;justify-content:center;}
+.btn:hover{background:#c73208;}
+.btn:disabled{background:#9ca3af;cursor:not-allowed;}
+.result{display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:20px 22px;margin-top:16px;}
+.result h3{font-size:18px;font-weight:900;text-transform:uppercase;color:#1a9e52;margin-bottom:8px;}
+.result p{font-size:13px;color:#166534;line-height:1.7;}
+.steps{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.step{display:flex;gap:10px;font-size:13px;color:#1e1b4b;background:#fff;border:1px solid #bbf7d0;border-radius:6px;padding:10px 14px;}
+.sn{font-size:18px;font-weight:900;color:#e8420a;min-width:22px;line-height:1.2;}
+.err-box{background:#fef2f2;border:2px solid #fca5a5;border-radius:10px;padding:20px 22px;margin-top:16px;}
+.err-box h3{font-size:16px;font-weight:900;text-transform:uppercase;color:#dc2626;margin-bottom:6px;}
+.err-box p{font-size:13px;color:#991b1b;line-height:1.6;}
+.status-list{margin-top:14px;}
+.status-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:6px;}
+.status-row.signed{background:#f0fdf4;border:1px solid #bbf7d0;}
+.status-row.pending{background:#fef3c7;border:1px solid #fde68a;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading{text-align:center;padding:40px;color:#6b7280;font-size:14px;}
+.loading .spin-lg{width:32px;height:32px;border:3px solid #dde1e9;border-top-color:#e8420a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo-block">
+    <img src="https://costeffective.com.au/wp-content/uploads/2026/04/cemlogo-1.png" alt="CEM" onerror="this.style.display='none'">
+    <div class="logo-text">
+      <div>COST EFFECTIVE</div><div>MAINTENANCE</div>
+      <div class="logo-sub">ABN 59 635 953 301 · (07) 3376 6188</div>
+    </div>
+  </div>
+  <div class="hdr-div"></div>
+  <div class="hdr-info">
+    <div class="hdr-eyebrow">Digital Signature</div>
+    <div class="hdr-title">Sign <span>Safety</span> Checklist</div>
+  </div>
+</div>
+
+<div class="ybanner">
+  ✍️ Action required — Select your name below, type it to sign, then click Submit Signature. Takes 30 seconds.
+</div>
+
+<div class="main" id="main">
+  <div class="loading"><div class="spin-lg"></div>Loading checklist details…</div>
+</div>
+
+<script>
+const TOKEN = 'pk_94846556_AMDUSYO093WC20PMCHMUWMWZFGQ16VZ5';
+const API   = 'https://api.clickup.com/api/v2';
+
+// Parse URL params
+const P      = new URLSearchParams(window.location.search);
+const TASK   = P.get('task');
+const WEEK   = P.get('week')      || '';
+const INSP   = P.get('inspector') || '';
+const STAFF  = (P.get('staff')    || '').split(',').map(s=>s.trim()).filter(Boolean);
+
+let selectedName = '';
+let taskDesc     = '';
+let taskCounts   = {ok:0,warn:0,fail:0,na:0};
+
+if(!TASK || !STAFF.length){
+  showError('Invalid Link','This signing link is missing required information. Please use the link from the ClickUp task comment.');
+} else {
+  loadTask();
+}
+
+async function loadTask(){
+  try{
+    const r = await fetch(`${API}/task/${TASK}`,{headers:{'Authorization':TOKEN}});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.err || 'HTTP '+r.status);
+    taskDesc = d.description||'';
+
+    // Parse score from description
+    const sm = taskDesc.match(/✔(\d+) ⚠(\d+) ✘(\d+) —(\d+)/);
+    if(sm) taskCounts = {ok:+sm[1],warn:+sm[2],fail:+sm[3],na:+sm[4]};
+
+    // Parse who has already signed
+    const alreadySigned = [];
+    STAFF.forEach(name=>{
+      if(taskDesc.includes(name+': ✅')) alreadySigned.push(name);
+    });
+
+    render(alreadySigned);
+  }catch(e){
+    showError('Could Not Load Checklist','Error: '+e.message+'<br><br>Please check your internet connection and try again.');
+  }
+}
+
+function render(alreadySigned){
+  const pending = STAFF.filter(s=>!alreadySigned.includes(s));
+  const week    = WEEK;
+  const insp    = INSP;
+
+  const pillsHtml = `
+    <span class="pill" style="background:#dcfce7;color:#1a9e52;border:1px solid #bbf7d0">✔ ${taskCounts.ok} OK</span>
+    <span class="pill" style="background:#fef3c7;color:#d97706;border:1px solid #fde68a">⚠ ${taskCounts.warn} Actions</span>
+    <span class="pill" style="background:#fee2e2;color:#dc2626;border:1px solid #fecaca">✘ ${taskCounts.fail} Fails</span>
+    <span class="pill" style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb">— ${taskCounts.na} N/A</span>`;
+
+  const statusHtml = STAFF.map(s=>{
+    const signed = alreadySigned.includes(s);
+    return `<div class="status-row ${signed?'signed':'pending'}">
+      <span style="font-size:18px">${signed?'✅':'⏳'}</span>
+      <span style="font-size:13px;font-weight:700;color:#1a2e5a;flex:1">${s}</span>
+      <span style="font-size:11px;font-weight:700;color:${signed?'#1a9e52':'#d97706'}">${signed?'Signed':'Pending'}</span>
+    </div>`;
+  }).join('');
+
+  const allDone = pending.length === 0;
+
+  let signSection = '';
+  if(allDone){
+    signSection = `<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:20px 22px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">🎉</div>
+      <div style="font-size:17px;font-weight:900;text-transform:uppercase;color:#1a9e52;margin-bottom:6px">All Signed!</div>
+      <div style="font-size:13px;color:#166534">All ${STAFF.length} staff members have signed this week's safety checklist.</div>
+    </div>`;
+  } else {
+    const optionsHtml = `<option value="">— Select your name —</option>`
+      + pending.map(s=>`<option value="${s}">${s}</option>`).join('');
+
+    signSection = `<div class="card">
+      <div class="ctitle">✍️ Sign Your Name</div>
+      <div class="select-wrap">
+        <label>Select your name:</label>
+        <select class="name-select" id="nameSelect" onchange="onSelectName(this.value)">
+          ${optionsHtml}
+        </select>
+      </div>
+      <div class="sig-box" id="sigBox" style="display:none">
+        <span class="sig-box-lbl">Your Signature</span>
+        <div class="sig-person" id="sigPerson"></div>
+        <div class="sig-wrap">
+          <input class="sig-inp" id="sigInp" type="text" placeholder="Type your full name to sign…"
+            oninput="onSigInput(this.value)" autocomplete="off" spellcheck="false">
+          <span class="sig-tick">✅</span>
+        </div>
+        <div class="sig-hint" id="sigHint">Type your name exactly as shown above</div>
+        <div class="match-label" id="matchLabel">✔ Name matches — ready to submit</div>
+      </div>
+      <button class="btn" id="submitBtn" onclick="submitSignature()" disabled>✍️ Submit My Signature</button>
+      <div class="result" id="resultBox"></div>
+    </div>`;
+  }
+
+  document.getElementById('main').innerHTML = `
+    <div class="card">
+      <div class="ctitle">📋 Checklist Details</div>
+      <div class="meta-grid">
+        <div><div class="ml">Week Commencing</div><div class="mv">${week}</div></div>
+        <div><div class="ml">Completed By</div><div class="mv">${insp||'—'}</div></div>
+        <div><div class="ml">Staff on Site</div><div class="mv">${STAFF.length} people</div></div>
+        <div><div class="ml">ClickUp Task</div><div class="mv"><a href="https://app.clickup.com/t/${TASK}" target="_blank" style="color:#1a2e5a;font-size:12px">View Task ↗</a></div></div>
+      </div>
+      <div class="pills">${pillsHtml}</div>
+    </div>
+
+    ${signSection}
+
+    <div class="card">
+      <div class="ctitle">📝 Signature Status (${alreadySigned.length}/${STAFF.length})</div>
+      <div class="status-list">${statusHtml}</div>
+      ${!allDone?`<button onclick="location.reload()" style="margin-top:14px;font-size:12px;font-weight:700;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid #dde1e9;cursor:pointer;background:#fff;color:#6b7280">↻ Refresh Status</button>`:''}
+    </div>`;
+}
+
+function onSelectName(name){
+  selectedName = name;
+  const box    = document.getElementById('sigBox');
+  const person = document.getElementById('sigPerson');
+  const inp    = document.getElementById('sigInp');
+  if(!name){ box.style.display='none'; return; }
+  box.style.display='block';
+  box.className='sig-box';
+  person.textContent = name;
+  inp.value='';
+  document.getElementById('sigHint').style.display='block';
+  document.getElementById('matchLabel').classList.remove('show');
+  document.getElementById('submitBtn').disabled=true;
+}
+
+function onSigInput(val){
+  if(!selectedName) return;
+  const match = val.trim().toLowerCase()===selectedName.trim().toLowerCase() && val.trim().length>0;
+  const box   = document.getElementById('sigBox');
+  box.className = 'sig-box'+(match?' signed':'');
+  document.getElementById('sigHint').style.display  = match?'none':'block';
+  document.getElementById('matchLabel').classList.toggle('show', match);
+  document.getElementById('submitBtn').disabled = !match;
+}
+
+async function submitSignature(){
+  if(!selectedName) return;
+  const val  = document.getElementById('sigInp').value.trim();
+  if(val.toLowerCase()!==selectedName.toLowerCase()) return;
+
+  const btn  = document.getElementById('submitBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Saving…';
+
+  const ts = new Date().toLocaleString('en-AU');
+
+  try{
+    // Fetch fresh task description
+    const r = await fetch(`${API}/task/${TASK}`,{headers:{'Authorization':TOKEN}});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.err || 'HTTP '+r.status);
+
+    let desc = d.description || '';
+
+    // Replace pending line for this person with signed line
+    const pendingLine = selectedName+': ⏳ Pending';
+    const signedLine  = selectedName+': ✅ '+val+' · Signed '+ts;
+
+    if(desc.includes(pendingLine)){
+      desc = desc.replace(pendingLine, signedLine);
+    } else {
+      // Add signature if line not found
+      const sigSection = '✍️ **SIGNATURES**';
+      if(desc.includes(sigSection)){
+        desc = desc.replace(sigSection, sigSection+'\n'+signedLine);
+      } else {
+        desc += '\n\n✍️ **SIGNATURES**\n'+signedLine;
+      }
+    }
+
+    // Update task description
+    const u = await fetch(`${API}/task/${TASK}`,{
+      method:'PUT',
+      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify({description:desc})
+    });
+    if(!u.ok){ const ud=await u.json(); throw new Error(ud.err||'Could not save signature'); }
+
+    // Post notification comment
+    const remaining = STAFF.filter(s=>!desc.includes(s+': ✅') && s!==selectedName);
+    const commentText = remaining.length
+      ? `✍️ **${selectedName}** has signed the safety checklist.\n\n${remaining.length} signature${remaining.length>1?'s':''} still needed: ${remaining.join(', ')}`
+      : `✅ **All signatures complete!** Every staff member has signed the weekly safety checklist for the week of ${WEEK}.`;
+
+    await fetch(`${API}/task/${TASK}/comment`,{
+      method:'POST',
+      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify({comment_text:commentText, notify_all:true})
+    });
+
+    // Show success
+    btn.innerHTML='✅ Signature Saved!';
+    const rb = document.getElementById('resultBox');
+    rb.className='result';
+    rb.style.display='block';
+    rb.innerHTML=`<h3>✅ Signed Successfully!</h3>
+      <p>Your signature has been recorded in ClickUp for the week of <strong>${WEEK}</strong>.</p>
+      ${remaining.length?`<p style="margin-top:8px">Still waiting for: <strong>${remaining.join(', ')}</strong></p>`:'<p style="margin-top:8px;color:#1a9e52;font-weight:700">🎉 All staff have now signed!</p>'}
+      <div class="steps" style="margin-top:12px">
+        <div class="step"><span class="sn">✅</span><span>Signature saved to ClickUp</span></div>
+        <div class="step"><span class="sn">✅</span><span>Manager notified via ClickUp</span></div>
+        ${remaining.length?`<div class="step"><span class="sn">⏳</span><span>Waiting for ${remaining.length} more signature${remaining.length>1?'s':''}</span></div>`:''}
+      </div>`;
+
+    // Reload after 3 seconds to show updated status
+    setTimeout(()=>location.reload(), 3000);
+
+  }catch(e){
+    btn.disabled=false;
+    btn.innerHTML='✍️ Submit My Signature';
+    const rb=document.getElementById('resultBox');
+    rb.className='err-box';
+    rb.style.display='block';
+    rb.innerHTML=`<h3>❌ Could Not Save</h3><p>${e.message}<br><br>Check your internet connection and try again.</p>`;
+  }
+}
+
+function showError(title, msg){
+  document.getElementById('main').innerHTML=`
+    <div class="card" style="text-align:center;padding:40px 22px">
+      <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:17px;font-weight:900;text-transform:uppercase;color:#dc2626;margin-bottom:8px">${title}</div>
+      <div style="font-size:13px;color:#991b1b;line-height:1.6">${msg}</div>
+    </div>`;
+}
+</script>
+</body>
+</html>
