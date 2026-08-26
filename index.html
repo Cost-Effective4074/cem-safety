@@ -436,7 +436,6 @@ async function submitToClickUp(){
         name:`Safety Checklist — ${week} — ${insp} — ${sl}`,
         description:desc,
         priority:c.fail>0?1:c.warn>0?2:3,
-        due_date:due.getTime(),due_date_time:false,
         tags:c.fail>0?['safety','fail']:c.warn>0?['safety','action']:['safety','clear'],
       })
     });
