@@ -218,8 +218,22 @@ input,textarea,button,select{font-family:Arial,sans-serif;}
 <script>
 const TOKEN     = 'pk_94846556_VHAFWVLDRM00DA15A2FTBSTJTAZPCZET';
 const LIST_ID   = '90167004887';
-const API       = 'https://corsproxy.io/?https://api.clickup.com/api/v2';
+const API       = 'https://api.clickup.com/api/v2';
 const SIGN_BASE = 'https://cost-effective4074.github.io/cem-safety/sign.html';
+
+async function cuFetch(path, options={}){
+  const url = API + path;
+  const opts = {
+    ...options,
+    headers: {
+      'Authorization': TOKEN,
+      ...(options.body ? {'Content-Type':'application/json'} : {}),
+      ...(options.headers||{}),
+    },
+    mode: 'cors',
+  };
+  return fetch(url, opts);
+}
 
 const SECTIONS = [
   {id:'emergency',icon:'🚨',name:'Emergency Preparedness',tag:'CRITICAL — CHECK FIRST',items:[
@@ -420,9 +434,8 @@ async function submitToClickUp(){
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Submitting…';
 
   try{
-    const r=await fetch(`${API}/list/${LIST_ID}/task`,{
+    const r=await cuFetch(`/list/${LIST_ID}/task`,{
       method:'POST',
-      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
       body:JSON.stringify({
         name:`Safety Checklist — ${week} — ${insp} — ${sl}`,
         description:desc,
@@ -444,9 +457,8 @@ async function submitToClickUp(){
 
     // Post comment with signing link
     const commentText=`✍️ **ACTION REQUIRED — Please sign the weekly safety checklist**\n\nWeek of ${week} · Completed by ${insp}\n\n**Click the link below to sign on your own PC — no login required:**\n${signUrl}\n\nStaff who need to sign:\n${staff.map(s=>`• ${s} — ⏳ Pending`).join('\n')}\n\n_Signatures will update in ClickUp as each person signs._`;
-    await fetch(`${API}/task/${res.id}/comment`,{
+    await cuFetch(`/task/${res.id}/comment`,{
       method:'POST',
-      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
       body:JSON.stringify({comment_text:commentText,notify_all:true})
     });
 
@@ -487,7 +499,7 @@ function renderSigStatus(statusList){
 async function refreshSigStatus(){
   if(!currentTaskId)return;
   try{
-    const r=await fetch(`${API}/task/${currentTaskId}`,{headers:{'Authorization':TOKEN}});
+    const r=await cuFetch(`/task/${currentTaskId}`,{method:'GET'});
     const d=await r.json();
     if(!r.ok)throw new Error(d.err);
     const desc=d.description||'';
