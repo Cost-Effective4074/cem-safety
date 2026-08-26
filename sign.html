@@ -94,17 +94,15 @@ body{background:#f4f5f7;color:#111827;font-family:Arial,sans-serif;font-size:14p
 
 <script>
 const TOKEN = 'pk_94846556_VHAFWVLDRM00DA15A2FTBSTJTAZPCZET';
-const API   = 'https://api.clickup.com/api/v2';
+const API   = 'https://cem-clickup.28b69b90ecc05268ff5bd453d276130f.workers.dev';
 
 async function cuFetch(path, options={}){
   return fetch(API + path, {
     ...options,
     headers: {
-      'Authorization': TOKEN,
       ...(options.body ? {'Content-Type':'application/json'} : {}),
       ...(options.headers||{}),
     },
-    mode: 'cors',
   });
 }
 
