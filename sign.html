@@ -166,6 +166,13 @@ function render(alreadySigned){
     </div>`;
   }).join('');
 
+  // Parse full checklist from task description
+  const checklistHtml = parseChecklist(taskDesc);
+
+  // Parse existing general comments
+  const gcMatch = taskDesc.match(/💬 \*\*GENERAL COMMENTS\*\*\n([\s\S]*?)(?:\n📋|\n✍️|\n_Cost|$)/);
+  const existingComments = gcMatch ? gcMatch[1].trim() : '';
+
   const allDone = pending.length === 0;
 
   let signSection = '';
@@ -198,6 +205,12 @@ function render(alreadySigned){
         <div class="sig-hint" id="sigHint">Type your name exactly as shown above</div>
         <div class="match-label" id="matchLabel">✔ Name matches — ready to submit</div>
       </div>
+      <div style="margin-top:16px">
+        <label style="font-size:13px;font-weight:700;color:#1a2e5a;display:block;margin-bottom:6px">💬 Additional Comments (optional)</label>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:8px">Add anything you noticed that isn't on the checklist before signing.</div>
+        <textarea id="signerComment" placeholder="Enter any additional observations or notes…"
+          style="width:100%;min-height:80px;background:#f9fafb;border:1px solid #dde1e9;border-radius:6px;color:#111827;font-size:13px;padding:10px 13px;resize:vertical;outline:none;line-height:1.6;font-family:Arial,sans-serif"></textarea>
+      </div>
       <button class="btn" id="submitBtn" onclick="submitSignature()" disabled>✍️ Submit My Signature</button>
       <div class="result" id="resultBox"></div>
     </div>`;
@@ -218,10 +231,101 @@ function render(alreadySigned){
     ${signSection}
 
     <div class="card">
+      <div class="ctitle">📋 Full Checklist</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:14px">Review all items before signing. Items marked ⚠ or ✘ require attention.</div>
+      ${checklistHtml}
+      ${existingComments?`<div style="margin-top:14px;background:#f9fafb;border:1px solid #dde1e9;border-radius:6px;padding:12px 14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#1a2e5a;margin-bottom:6px">💬 General Comments</div><div style="font-size:13px;color:#374151;white-space:pre-wrap">${existingComments}</div></div>`:''}
+    </div>
+
+    <div class="card">
       <div class="ctitle">📝 Signature Status (${alreadySigned.length}/${STAFF.length})</div>
       <div class="status-list">${statusHtml}</div>
       ${!allDone?`<button onclick="location.reload()" style="margin-top:14px;font-size:12px;font-weight:700;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid #dde1e9;cursor:pointer;background:#fff;color:#6b7280">↻ Refresh Status</button>`:''}
     </div>`;
+}
+
+function parseChecklist(desc){
+  // Parse each section from the description
+  const sections = [];
+  const sectionRe = /\*\*(.*?)\*\*\n([\s\S]*?)(?=\n\*\*[^*]|\n━|$)/g;
+  let m;
+
+  // Find the full checklist section
+  const checklistStart = desc.indexOf('📋 **FULL CHECKLIST**');
+  if(checklistStart === -1){
+    return '<div style="font-size:13px;color:#6b7280;font-style:italic">Checklist details not available.</div>';
+  }
+
+  const checklistSection = desc.substring(checklistStart);
+  let html = '';
+
+  // Split by section headers (emoji + bold name)
+  const lines = checklistSection.split('\n');
+  let currentSection = null;
+  let sectionItems = [];
+
+  const flushSection = () => {
+    if(!currentSection) return;
+    html += `<div style="margin-bottom:12px;border:1px solid #dde1e9;border-radius:8px;overflow:hidden">
+      <div style="background:#f0f2f5;padding:9px 14px;font-size:13px;font-weight:700;text-transform:uppercase;color:#1a2e5a;border-bottom:1px solid #dde1e9">${currentSection}</div>
+      ${sectionItems.join('')}
+    </div>`;
+    sectionItems = [];
+  };
+
+  lines.forEach(line => {
+    // Section header line e.g. "🚨 EMERGENCY PREPAREDNESS"
+    const secMatch = line.match(/^\*\*(.*?)\*\*$/);
+    if(secMatch && secMatch[1].match(/^[🚨⚗️🦺⚙️🏗️💪🧹]/)){
+      flushSection();
+      currentSection = secMatch[1];
+      return;
+    }
+
+    // Item line e.g. "  01. [✔ OK] Fire extinguisher..."
+    const itemMatch = line.match(/^\s+(\d+)\.\s+\[(.*?)\]\s+(.+)$/);
+    if(itemMatch && currentSection){
+      const num = itemMatch[1];
+      const status = itemMatch[2].trim();
+      const text = itemMatch[3].trim();
+
+      const isOk   = status.includes('OK');
+      const isWarn = status.includes('ACT');
+      const isFail = status.includes('FAIL');
+      const isNa   = status.includes('N/A');
+      const isPend = !isOk&&!isWarn&&!isFail&&!isNa;
+
+      const bg    = isOk?'#f0fdf4':isWarn?'#fffbeb':isFail?'#fef2f2':'#fff';
+      const bc    = isOk?'#1a9e52':isWarn?'#d97706':isFail?'#dc2626':'#9ca3af';
+      const badge = isOk?'✔ OK':isWarn?'⚠ ACTION':isFail?'✘ FAIL':isNa?'N/A':'—';
+      const badgeBg = isOk?'#dcfce7':isWarn?'#fef3c7':isFail?'#fee2e2':'#f3f4f6';
+
+      sectionItems.push(`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;padding:9px 14px;border-bottom:1px solid #f0f2f5;border-left:3px solid ${bc};background:${bg}">
+        <div>
+          <div style="font-size:9px;color:#9ca3af;margin-bottom:2px">${currentSection.split(' ')[0]}-${num}</div>
+          <div style="font-size:12px;font-weight:600;color:#111827;line-height:1.4">${text}</div>
+        </div>
+        <span style="font-size:9px;font-weight:700;padding:3px 7px;border-radius:10px;background:${badgeBg};color:${bc};border:1px solid ${bc};white-space:nowrap;align-self:start;margin-top:2px">${badge}</span>
+      </div>`);
+      return;
+    }
+
+    // Comment line e.g. "      💬 some comment"
+    const cmtMatch = line.match(/^\s+💬\s+(.+)$/);
+    if(cmtMatch && sectionItems.length){
+      // Append comment to last item
+      const last = sectionItems[sectionItems.length-1];
+      sectionItems[sectionItems.length-1] = last.replace(
+        '</div>\n        </div>',
+        `<div style="font-size:11px;color:#6b7280;font-style:italic;margin-top:3px">💬 ${cmtMatch[1]}</div></div>\n        </div>`
+      );
+    }
+  });
+
+  flushSection();
+
+  return html || '<div style="font-size:13px;color:#6b7280;font-style:italic">No checklist items found.</div>';
+}
 }
 
 function onSelectName(name){
@@ -257,6 +361,7 @@ async function submitSignature(){
   const btn  = document.getElementById('submitBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Saving…';
 
+  const signerComment = (document.getElementById('signerComment')?.value||'').trim();
   const ts = new Date().toLocaleString('en-AU');
 
   try{
@@ -292,8 +397,8 @@ async function submitSignature(){
     // Post notification comment
     const remaining = STAFF.filter(s=>!desc.includes(s+': ✅') && s!==selectedName);
     const commentText = remaining.length
-      ? `✍️ **${selectedName}** has signed the safety checklist.\n\n${remaining.length} signature${remaining.length>1?'s':''} still needed: ${remaining.join(', ')}`
-      : `✅ **All signatures complete!** Every staff member has signed the weekly safety checklist for the week of ${WEEK}.`;
+      ? `✍️ **${selectedName}** has signed the safety checklist.${signerComment?'\n\n💬 **'+selectedName+'\'s note:** '+signerComment:''}\n\n${remaining.length} signature${remaining.length>1?'s':''} still needed: ${remaining.join(', ')}`
+      : `✅ **All signatures complete!** Every staff member has signed the weekly safety checklist for the week of ${WEEK}.${signerComment?'\n\n💬 **'+selectedName+'\'s note:** '+signerComment:''}`;
 
     await cuFetch(`/task/${TASK}/comment`,{
       method:'POST',
