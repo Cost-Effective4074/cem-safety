@@ -94,7 +94,19 @@ body{background:#f4f5f7;color:#111827;font-family:Arial,sans-serif;font-size:14p
 
 <script>
 const TOKEN = 'pk_94846556_VHAFWVLDRM00DA15A2FTBSTJTAZPCZET';
-const API   = 'https://corsproxy.io/?https://api.clickup.com/api/v2';
+const API   = 'https://api.clickup.com/api/v2';
+
+async function cuFetch(path, options={}){
+  return fetch(API + path, {
+    ...options,
+    headers: {
+      'Authorization': TOKEN,
+      ...(options.body ? {'Content-Type':'application/json'} : {}),
+      ...(options.headers||{}),
+    },
+    mode: 'cors',
+  });
+}
 
 // Parse URL params
 const P      = new URLSearchParams(window.location.search);
@@ -115,7 +127,7 @@ if(!TASK || !STAFF.length){
 
 async function loadTask(){
   try{
-    const r = await fetch(`${API}/task/${TASK}`,{headers:{'Authorization':TOKEN}});
+    const r = await cuFetch(`/task/${TASK}`);
     const d = await r.json();
     if(!r.ok) throw new Error(d.err || 'HTTP '+r.status);
     taskDesc = d.description||'';
@@ -251,7 +263,7 @@ async function submitSignature(){
 
   try{
     // Fetch fresh task description
-    const r = await fetch(`${API}/task/${TASK}`,{headers:{'Authorization':TOKEN}});
+    const r = await cuFetch(`/task/${TASK}`);
     const d = await r.json();
     if(!r.ok) throw new Error(d.err || 'HTTP '+r.status);
 
@@ -264,7 +276,6 @@ async function submitSignature(){
     if(desc.includes(pendingLine)){
       desc = desc.replace(pendingLine, signedLine);
     } else {
-      // Add signature if line not found
       const sigSection = '✍️ **SIGNATURES**';
       if(desc.includes(sigSection)){
         desc = desc.replace(sigSection, sigSection+'\n'+signedLine);
@@ -274,9 +285,8 @@ async function submitSignature(){
     }
 
     // Update task description
-    const u = await fetch(`${API}/task/${TASK}`,{
+    const u = await cuFetch(`/task/${TASK}`,{
       method:'PUT',
-      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
       body:JSON.stringify({description:desc})
     });
     if(!u.ok){ const ud=await u.json(); throw new Error(ud.err||'Could not save signature'); }
@@ -287,9 +297,8 @@ async function submitSignature(){
       ? `✍️ **${selectedName}** has signed the safety checklist.\n\n${remaining.length} signature${remaining.length>1?'s':''} still needed: ${remaining.join(', ')}`
       : `✅ **All signatures complete!** Every staff member has signed the weekly safety checklist for the week of ${WEEK}.`;
 
-    await fetch(`${API}/task/${TASK}/comment`,{
+    await cuFetch(`/task/${TASK}/comment`,{
       method:'POST',
-      headers:{'Authorization':TOKEN,'Content-Type':'application/json'},
       body:JSON.stringify({comment_text:commentText, notify_all:true})
     });
 
