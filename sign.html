@@ -259,8 +259,178 @@ function render(alreadySigned){
     <div class="card">
       <div class="ctitle">📝 Signature Status (${alreadySigned.length}/${STAFF.length})</div>
       <div class="status-list">${statusHtml}</div>
-      ${!allDone?`<button onclick="location.reload()" style="margin-top:14px;font-size:12px;font-weight:700;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid #dde1e9;cursor:pointer;background:#fff;color:#6b7280">↻ Refresh Status</button>`:''}
+      ${!allDone
+        ? `<button onclick="location.reload()" style="margin-top:14px;font-size:12px;font-weight:700;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid #dde1e9;cursor:pointer;background:#fff;color:#6b7280">↻ Refresh Status</button>`
+        : `<button onclick="generatePDF()" style="margin-top:14px;font-size:14px;font-weight:700;text-transform:uppercase;padding:12px 28px;border-radius:6px;border:none;cursor:pointer;background:#e8420a;color:#fff;display:inline-flex;align-items:center;gap:8px">🖨 Download PDF</button>`
+      }
     </div>`;
+}
+
+function generatePDF(){
+  const insp  = INSP;
+  const week  = WEEK;
+  const ts    = new Date().toLocaleString('en-AU');
+
+  // Parse scores
+  const sc    = taskCounts.fail>0?'#dc2626':taskCounts.warn>0?'#d97706':'#1a9e52';
+  const slbl  = taskCounts.fail>0?'🔴 FAIL ITEMS RECORDED':taskCounts.warn>0?'🟡 ACTIONS REQUIRED':'✅ ALL CLEAR';
+
+  // Parse signatures from description
+  const sigLines = [];
+  const sigBlock = taskDesc.match(/✍️ \*\*SIGNATURES\*\*[^\n]*\n([\s\S]*?)(?:\n_Cost|$)/);
+  if(sigBlock){
+    sigBlock[1].split('\n').forEach(line=>{
+      const m = line.match(/^(.+?):\s+✅\s+(.+?)\s+·\s+Signed\s+(.+)$/);
+      if(m) sigLines.push({name:m[1].trim(), sig:m[2].trim(), time:m[3].trim()});
+    });
+  }
+
+  // Parse general comments
+  const gcMatch = taskDesc.match(/💬 \*\*GENERAL COMMENTS\*\*\n([\s\S]*?)(?:\n📋|\n✍️|\n_Cost|$)/);
+  const gc = gcMatch ? gcMatch[1].trim() : '';
+
+  // Parse fails and actions
+  const fails=[], warns=[];
+  const failBlock = taskDesc.match(/🔴 \*\*FAILS \(\d+\)\*\*\n([\s\S]*?)(?:\n🟡|\n📋|$)/);
+  const warnBlock = taskDesc.match(/🟡 \*\*ACTIONS \(\d+\)\*\*\n([\s\S]*?)(?:\n📋|$)/);
+  if(failBlock) failBlock[1].split('\n').forEach(l=>{ if(l.match(/^\d+\./)) fails.push(l.replace(/^\d+\.\s*/,'').trim()); });
+  if(warnBlock) warnBlock[1].split('\n').forEach(l=>{ if(l.match(/^\d+\./)) warns.push(l.replace(/^\d+\.\s*/,'').trim()); });
+
+  // Build checklist HTML for PDF
+  let checklistPDF = '';
+  const checklistStart = taskDesc.indexOf('📋 **FULL CHECKLIST**');
+  if(checklistStart !== -1){
+    const section = taskDesc.substring(checklistStart);
+    const lines   = section.split('\n');
+    let curSec    = null;
+    let rows      = [];
+
+    const flushSec = ()=>{
+      if(!curSec) return;
+      checklistPDF += `<div style="margin-bottom:10px;border:1px solid #dde1e9;border-radius:6px;overflow:hidden;page-break-inside:avoid">
+        <div style="background:#f0f2f5;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;color:#1a2e5a;border-bottom:1px solid #dde1e9">${curSec}</div>
+        <table style="width:100%;border-collapse:collapse">${rows.join('')}</table>
+      </div>`;
+      rows=[];
+    };
+
+    lines.forEach((line,li)=>{
+      const secM = line.match(/^\*\*(.*?)\*\*$/);
+      if(secM && secM[1].match(/^[🚨⚗️🦺⚙️🏗️💪🧹]/)){
+        flushSec(); curSec=secM[1]; return;
+      }
+      const itemM = line.match(/^\s+(\d+)\.\s+\[(.*?)\]\s+(.+)$/);
+      if(itemM && curSec){
+        const st=itemM[2].trim();
+        const isOk=st.includes('OK'),isWarn=st.includes('ACT'),isFail=st.includes('FAIL'),isNa=st.includes('N/A');
+        const bg=isOk?'#f0fdf4':isWarn?'#fffbeb':isFail?'#fef2f2':'#fff';
+        const bc=isOk?'#1a9e52':isWarn?'#d97706':isFail?'#dc2626':'#6b7280';
+        const badge=isOk?'✔ OK':isWarn?'⚠ ACTION':isFail?'✘ FAIL':isNa?'N/A':'—';
+        const badgeBg=isOk?'#dcfce7':isWarn?'#fef3c7':isFail?'#fee2e2':'#f3f4f6';
+        // Check next line for comment
+        const nextLine = lines[li+1]||'';
+        const cmtM = nextLine.match(/^\s+💬\s+(.+)$/);
+        const cmt = cmtM ? `<div style="font-size:9px;color:#6b7280;font-style:italic;margin-top:2px">💬 ${cmtM[1]}</div>` : '';
+        rows.push(`<tr style="background:${bg}">
+          <td style="padding:5px 8px;border-bottom:1px solid #f0f2f5;font-size:9px;color:#9ca3af;width:50px">${curSec.split(' ')[0]}-${itemM[1]}</td>
+          <td style="padding:5px 8px;border-bottom:1px solid #f0f2f5;font-size:10px;border-left:3px solid ${bc}">${itemM[3].trim()}${cmt}</td>
+          <td style="padding:5px 8px;border-bottom:1px solid #f0f2f5;text-align:center;width:70px"><span style="font-size:9px;font-weight:700;color:${bc};background:${badgeBg};border:1px solid ${bc};padding:2px 5px;border-radius:8px">${badge}</span></td>
+        </tr>`);
+      }
+    });
+    flushSec();
+  }
+
+  const sigsHTML = sigLines.length
+    ? `<table style="width:100%;border-collapse:collapse;margin-top:6px">${sigLines.map(s=>`
+        <tr>
+          <td style="padding:8px 12px;border:1px solid #dde1e9;font-size:11px;font-weight:700;color:#1a2e5a;width:35%">${s.name}</td>
+          <td style="padding:8px 12px;border:1px solid #dde1e9;font-size:13px;font-style:italic;color:#1a9e52">${s.sig} ✅</td>
+          <td style="padding:8px 12px;border:1px solid #dde1e9;font-size:10px;color:#6b7280">Signed digitally · ${s.time}</td>
+        </tr>`).join('')}</table>`
+    : '<p style="font-size:11px;color:#9ca3af">No signatures recorded.</p>';
+
+  const failsHTML = fails.length
+    ? fails.map(f=>`<div style="background:#fef2f2;border-left:3px solid #dc2626;padding:6px 10px;border-radius:0 4px 4px 0;margin-bottom:4px;font-size:10px">${f}</div>`).join('')
+    : '<p style="font-size:10px;color:#1a9e52">✅ None</p>';
+
+  const warnsHTML = warns.length
+    ? warns.map(w=>`<div style="background:#fffbeb;border-left:3px solid #d97706;padding:6px 10px;border-radius:0 4px 4px 0;margin-bottom:4px;font-size:10px">${w}</div>`).join('')
+    : '<p style="font-size:10px;color:#1a9e52">✅ None</p>';
+
+  const staffBadges = STAFF.map(s=>`<span style="display:inline-block;background:#f0f2f5;border:1px solid #dde1e9;border-radius:10px;padding:2px 8px;font-size:10px;margin:2px">👤 ${s}</span>`).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Safety Checklist — ${week} — ${insp}</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:20px;font-size:11px;color:#111827;background:#fff;}
+    @media print{body{padding:10px;}@page{margin:15mm;}.no-print{display:none!important;}}
+    h3{font-size:12px;font-weight:700;text-transform:uppercase;color:#1a2e5a;margin:14px 0 6px;letter-spacing:.03em;}
+  </style>
+  </head><body>
+
+  <button class="no-print" onclick="window.print()" style="font-size:13px;font-weight:700;padding:10px 24px;background:#e8420a;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-bottom:16px">🖨 Print / Save as PDF</button>
+
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;gap:14px;border-bottom:3px solid #e8420a;padding-bottom:12px;margin-bottom:14px">
+    <div>
+      <div style="font-size:18px;font-weight:900;color:#1a2e5a">COST EFFECTIVE MAINTENANCE</div>
+      <div style="font-size:9px;color:#6b7280">Unit 1/18 Boron St, Sumner Park QLD 4074 · (07) 3376 6188 · ABN 59 635 953 301</div>
+    </div>
+    <div style="margin-left:auto;font-size:9px;color:#6b7280;text-align:right">Generated:<br>${ts}</div>
+  </div>
+
+  <!-- META -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#f0f2f5;border-radius:6px;padding:10px 12px;margin-bottom:12px">
+    ${[['Completed By',insp],['Week Commencing',week],['Shift / Area','—'],['Staff on Site',STAFF.length+' people']].map(([l,v])=>`
+      <div><div style="font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:2px">${l}</div>
+      <div style="font-size:12px;font-weight:700;color:#1a2e5a">${v}</div></div>`).join('')}
+  </div>
+
+  <!-- STATUS BAR -->
+  <div style="padding:8px 14px;border-radius:6px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:${taskCounts.fail>0?'#fef2f2':taskCounts.warn>0?'#fffbeb':'#f0fdf4'};border:1px solid ${taskCounts.fail>0?'#fecaca':taskCounts.warn>0?'#fde68a':'#bbf7d0'}">
+    <span style="font-size:13px;font-weight:800;color:${sc}">${slbl}</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#dcfce7;color:#1a9e52;border:1px solid #bbf7d0">✔ ${taskCounts.ok} OK</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#fef3c7;color:#d97706;border:1px solid #fde68a">⚠ ${taskCounts.warn} Actions</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#fee2e2;color:#dc2626;border:1px solid #fecaca">✘ ${taskCounts.fail} Fails</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb">— ${taskCounts.na} N/A</span>
+    </div>
+  </div>
+
+  <!-- STAFF -->
+  <h3>👷 Staff on Site</h3>
+  <div style="margin-bottom:12px">${staffBadges}</div>
+
+  <!-- FAILS & ACTIONS -->
+  ${fails.length||warns.length?`
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div><h3 style="color:#dc2626">⛔ Fail Items</h3>${failsHTML}</div>
+    <div><h3 style="color:#d97706">⚠ Action Items</h3>${warnsHTML}</div>
+  </div>`:''}
+
+  <!-- FULL CHECKLIST -->
+  <h3>📋 Full Checklist</h3>
+  <div style="margin-bottom:12px">${checklistPDF}</div>
+
+  <!-- GENERAL COMMENTS -->
+  ${gc?`<h3>💬 General Comments</h3>
+  <div style="background:#f9fafb;border:1px solid #dde1e9;border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.6;white-space:pre-wrap;margin-bottom:12px">${gc}</div>`:''}
+
+  <!-- SIGNATURES -->
+  <h3>✍️ Digital Signatures</h3>
+  <div style="margin-bottom:12px;page-break-inside:avoid">${sigsHTML}</div>
+
+  <div style="margin-top:18px;padding-top:10px;border-top:1px solid #dde1e9;font-size:9px;color:#9ca3af;text-align:center">
+    Cost Effective Maintenance · Weekly Safety Checklist · ${ts} · QLD WHS Act 2011
+  </div>
+  </body></html>`;
+
+  const blob = new Blob([html],{type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const win  = window.open(url,'_blank');
+  if(win) win.addEventListener('load',()=>setTimeout(()=>win.print(),600));
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 
 function parseChecklist(desc){
