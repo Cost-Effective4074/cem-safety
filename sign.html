@@ -116,6 +116,8 @@ const STAFF  = (P.get('staff')    || '').split(',').map(s=>s.trim()).filter(Bool
 let selectedName = '';
 let taskDesc     = '';
 let taskCounts   = {ok:0,warn:0,fail:0,na:0};
+let itemComments = {};
+let itemOriginals= {};
 
 if(!TASK || !STAFF.length){
   showError('Invalid Link','This signing link is missing required information. Please use the link from the ClickUp task comment.');
@@ -290,6 +292,8 @@ function parseChecklist(desc){
     sectionItems = [];
   };
 
+  let itemIndex = 0;
+
   lines.forEach(line => {
     // Section header line e.g. "🚨 EMERGENCY PREPAREDNESS"
     const secMatch = line.match(/^\*\*(.*?)\*\*$/);
@@ -302,40 +306,50 @@ function parseChecklist(desc){
     // Item line e.g. "  01. [✔ OK] Fire extinguisher..."
     const itemMatch = line.match(/^\s+(\d+)\.\s+\[(.*?)\]\s+(.+)$/);
     if(itemMatch && currentSection){
-      const num = itemMatch[1];
+      const num    = itemMatch[1];
       const status = itemMatch[2].trim();
-      const text = itemMatch[3].trim();
+      const text   = itemMatch[3].trim();
+      const idx    = itemIndex++;
 
       const isOk   = status.includes('OK');
       const isWarn = status.includes('ACT');
       const isFail = status.includes('FAIL');
       const isNa   = status.includes('N/A');
-      const isPend = !isOk&&!isWarn&&!isFail&&!isNa;
 
-      const bg    = isOk?'#f0fdf4':isWarn?'#fffbeb':isFail?'#fef2f2':'#fff';
-      const bc    = isOk?'#1a9e52':isWarn?'#d97706':isFail?'#dc2626':'#9ca3af';
-      const badge = isOk?'✔ OK':isWarn?'⚠ ACTION':isFail?'✘ FAIL':isNa?'N/A':'—';
+      const bg      = isOk?'#f0fdf4':isWarn?'#fffbeb':isFail?'#fef2f2':'#fff';
+      const bc      = isOk?'#1a9e52':isWarn?'#d97706':isFail?'#dc2626':'#9ca3af';
+      const badge   = isOk?'✔ OK':isWarn?'⚠ ACTION':isFail?'✘ FAIL':isNa?'N/A':'—';
       const badgeBg = isOk?'#dcfce7':isWarn?'#fef3c7':isFail?'#fee2e2':'#f3f4f6';
 
-      sectionItems.push(`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;padding:9px 14px;border-bottom:1px solid #f0f2f5;border-left:3px solid ${bc};background:${bg}">
-        <div>
-          <div style="font-size:9px;color:#9ca3af;margin-bottom:2px">${currentSection.split(' ')[0]}-${num}</div>
-          <div style="font-size:12px;font-weight:600;color:#111827;line-height:1.4">${text}</div>
+      // Store original text for later matching when saving
+      itemOriginals[idx] = text;
+      itemComments[idx]  = '';
+
+      sectionItems.push(`<div id="item-${idx}" style="padding:9px 14px;border-bottom:1px solid #f0f2f5;border-left:3px solid ${bc};background:${bg}">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;margin-bottom:6px">
+          <div>
+            <div style="font-size:9px;color:#9ca3af;margin-bottom:2px">${currentSection.split(' ')[0]}-${num}</div>
+            <div style="font-size:12px;font-weight:600;color:#111827;line-height:1.4">${text}</div>
+          </div>
+          <span style="font-size:9px;font-weight:700;padding:3px 7px;border-radius:10px;background:${badgeBg};color:${bc};border:1px solid ${bc};white-space:nowrap;align-self:start;margin-top:2px">${badge}</span>
         </div>
-        <span style="font-size:9px;font-weight:700;padding:3px 7px;border-radius:10px;background:${badgeBg};color:${bc};border:1px solid ${bc};white-space:nowrap;align-self:start;margin-top:2px">${badge}</span>
+        <textarea id="cmt-${idx}" placeholder="Add or edit comment for this item…"
+          oninput="itemComments[${idx}]=this.value"
+          style="width:100%;min-height:30px;background:rgba(255,255,255,.7);border:1px solid ${bc}44;border-radius:4px;color:#374151;font-size:11px;padding:4px 8px;resize:vertical;outline:none;font-family:Arial,sans-serif;font-style:italic;line-height:1.4"></textarea>
       </div>`);
       return;
     }
 
     // Comment line e.g. "      💬 some comment"
     const cmtMatch = line.match(/^\s+💬\s+(.+)$/);
-    if(cmtMatch && sectionItems.length){
-      // Append comment to last item
-      const last = sectionItems[sectionItems.length-1];
-      sectionItems[sectionItems.length-1] = last.replace(
-        '</div>\n        </div>',
-        `<div style="font-size:11px;color:#6b7280;font-style:italic;margin-top:3px">💬 ${cmtMatch[1]}</div></div>\n        </div>`
-      );
+    if(cmtMatch && itemIndex > 0){
+      const idx = itemIndex - 1;
+      itemComments[idx] = cmtMatch[1];
+      // Set value on the textarea after render via a deferred script tag
+      setTimeout(()=>{
+        const ta = document.getElementById('cmt-'+idx);
+        if(ta) ta.value = cmtMatch[1];
+      }, 50);
     }
   });
 
@@ -389,6 +403,39 @@ async function submitSignature(){
     if(!task) throw new Error('Could not find checklist task.');
 
     let desc = task.description || '';
+
+    // Apply any edited item comments from the signing page
+    Object.keys(itemComments).forEach(idx=>{
+      const newCmt = itemComments[idx].trim();
+      const origText = itemOriginals[idx];
+      if(!origText) return;
+
+      // Find the item line in desc and update/add its comment
+      const lines = desc.split('\n');
+      const newLines = [];
+      let i = 0;
+      while(i < lines.length){
+        const line = lines[i];
+        // Match item line containing this text
+        if(line.includes(origText)){
+          newLines.push(line);
+          i++;
+          // Check if next line is an existing comment
+          if(i < lines.length && lines[i].match(/^\s+💬\s+/)){
+            // Replace or remove existing comment
+            if(newCmt) newLines.push(`      💬 ${newCmt}`);
+            i++; // skip old comment line
+          } else {
+            // Add new comment if there is one
+            if(newCmt) newLines.push(`      💬 ${newCmt}`);
+          }
+        } else {
+          newLines.push(line);
+          i++;
+        }
+      }
+      desc = newLines.join('\n');
+    });
 
     // Replace pending line for this person with signed line
     const pendingLine = selectedName+': ⏳ Pending';
