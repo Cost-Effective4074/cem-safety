@@ -196,7 +196,7 @@ input,textarea,button,select{font-family:Arial,sans-serif;}
       <div class="ptitle">Submit to ClickUp</div>
       <div class="actions-row">
         <button class="btn-accent" id="subBtn" onclick="submitToClickUp()">✅ Submit to ClickUp</button>
-        <button class="btn-ghost" onclick="window.print()">🖨 Print</button>
+        <button class="btn-navy" onclick="downloadPDF()">📄 Download PDF</button>
         <button class="btn-ghost" onclick="resetAll()">↺ Reset</button>
       </div>
       <div class="help-text">Once submitted, a <strong>signing link</strong> will appear below. Paste it into the ClickUp task — each staff member opens the link on their own PC and signs their name. ClickUp updates in real time as each person signs.</div>
@@ -519,6 +519,101 @@ function copyClickUpComment(){
   const insp=document.getElementById('inspector').value.trim();
   const text=`✍️ ACTION REQUIRED — Please sign the weekly safety checklist\n\nWeek of ${week} · Completed by ${insp}\n\nClick this link to sign on your own PC:\n${url}\n\nStaff: ${staff.join(', ')}`;
   navigator.clipboard.writeText(text).then(()=>alert('Comment copied! Paste it into ClickUp.'));
+}
+
+function downloadPDF(){
+  const insp  = document.getElementById('inspector').value.trim()||'—';
+  const week  = document.getElementById('weekDate').value||'—';
+  const shift = document.getElementById('shift').value.trim()||'—';
+  const gc    = document.getElementById('genCmt').value.trim();
+  const ts    = new Date().toLocaleString('en-AU');
+
+  const total = SECTIONS.reduce((a,s)=>a+s.items.length,0);
+  const done  = Object.values(ST).filter(Boolean).length;
+  const c     = {ok:0,warn:0,fail:0,na:0};
+  Object.values(ST).forEach(v=>{if(c[v]!==undefined)c[v]++;});
+
+  const fails=[],warns=[];
+  SECTIONS.forEach((sec,si)=>sec.items.forEach((item,ii)=>{
+    const k=ik(si,ii),s=ST[k],cm=CM[k]||'';
+    if(s==='fail') fails.push({section:sec.name,item:item.t,comment:cm});
+    if(s==='warn') warns.push({section:sec.name,item:item.t,comment:cm});
+  }));
+
+  const sc   = c.fail>0?'#dc2626':c.warn>0?'#d97706':'#1a9e52';
+  const slbl = c.fail>0?'🔴 FAIL ITEMS RECORDED':c.warn>0?'🟡 ACTIONS REQUIRED':'✅ ALL CLEAR';
+
+  // Build checklist table
+  let checklistPDF = '';
+  SECTIONS.forEach(sec=>{
+    let rows='';
+    sec.items.forEach((item,ii)=>{
+      const k=ik(SECTIONS.indexOf(sec),ii),s=ST[k];
+      const lb=s==='ok'?'✔ OK':s==='warn'?'⚠ ACTION':s==='fail'?'✘ FAIL':s==='na'?'N/A':'—';
+      const bc=s==='ok'?'#1a9e52':s==='warn'?'#d97706':s==='fail'?'#dc2626':s==='na'?'#6b7280':'#9ca3af';
+      const bg=s==='ok'?'#f0fdf4':s==='warn'?'#fffbeb':s==='fail'?'#fef2f2':'#fff';
+      const badgeBg=s==='ok'?'#dcfce7':s==='warn'?'#fef3c7':s==='fail'?'#fee2e2':'#f3f4f6';
+      const cmt=CM[k]?`<div style="font-size:9px;color:#6b7280;font-style:italic;margin-top:2px">💬 ${CM[k]}</div>`:'';
+      rows+=`<tr style="background:${bg}">
+        <td style="padding:5px 8px;border-bottom:1px solid #f0f2f5;font-size:9px;color:#9ca3af;width:50px">${sec.id.toUpperCase()}-${String(ii+1).padStart(2,'0')}</td>
+        <td style="padding:5px 8px;border-bottom:1px solid #f0f2f5;font-size:10px;border-left:3px solid ${bc}">${item.t}${cmt}</td>
+        <td style="padding:5px 8px;border-bottom:1px solid #f0f2f5;text-align:center;width:70px"><span style="font-size:9px;font-weight:700;color:${bc};background:${badgeBg};border:1px solid ${bc};padding:2px 5px;border-radius:8px">${lb}</span></td>
+      </tr>`;
+    });
+    checklistPDF+=`<div style="margin-bottom:10px;border:1px solid #dde1e9;border-radius:6px;overflow:hidden;page-break-inside:avoid">
+      <div style="background:#f0f2f5;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;color:#1a2e5a;border-bottom:1px solid #dde1e9">${sec.icon} ${sec.name}</div>
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+    </div>`;
+  });
+
+  const staffBadges = staff.map(s=>`<span style="display:inline-block;background:#f0f2f5;border:1px solid #dde1e9;border-radius:10px;padding:2px 8px;font-size:10px;margin:2px">👤 ${s}</span>`).join('');
+  const failsHTML = fails.map(f=>`<div style="background:#fef2f2;border-left:3px solid #dc2626;padding:6px 10px;border-radius:0 4px 4px 0;margin-bottom:4px;font-size:10px"><div style="font-size:9px;color:#9ca3af">${f.section}</div><div style="font-weight:600">${f.item}</div>${f.comment?`<div style="color:#6b7280;font-style:italic">${f.comment}</div>`:''}</div>`).join('') || '<p style="font-size:10px;color:#1a9e52">✅ None</p>';
+  const warnsHTML = warns.map(w=>`<div style="background:#fffbeb;border-left:3px solid #d97706;padding:6px 10px;border-radius:0 4px 4px 0;margin-bottom:4px;font-size:10px"><div style="font-size:9px;color:#9ca3af">${w.section}</div><div style="font-weight:600">${w.item}</div>${w.comment?`<div style="color:#6b7280;font-style:italic">${w.comment}</div>`:''}</div>`).join('') || '<p style="font-size:10px;color:#1a9e52">✅ None</p>';
+
+  const sigRows = staff.map(s=>`<tr>
+    <td style="padding:8px 12px;border:1px solid #dde1e9;font-size:11px;font-weight:700;color:#1a2e5a;width:35%">${s}</td>
+    <td style="padding:8px 12px;border:1px solid #dde1e9;font-size:12px;color:#9ca3af;font-style:italic">⏳ Pending signature</td>
+    <td style="padding:8px 12px;border:1px solid #dde1e9;font-size:10px;color:#6b7280">Via signing link</td>
+  </tr>`).join('');
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Safety Checklist — ${week} — ${insp}</title>
+  <style>body{font-family:Arial,sans-serif;margin:0;padding:20px;font-size:11px;color:#111827;background:#fff;}@media print{body{padding:10px;}@page{margin:15mm;}.no-print{display:none!important;}}h3{font-size:12px;font-weight:700;text-transform:uppercase;color:#1a2e5a;margin:14px 0 6px;letter-spacing:.03em;}</style>
+  </head><body>
+  <button class="no-print" onclick="window.print()" style="font-size:13px;font-weight:700;padding:10px 24px;background:#e8420a;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-bottom:16px">🖨 Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:14px;border-bottom:3px solid #e8420a;padding-bottom:12px;margin-bottom:14px">
+    <div><div style="font-size:18px;font-weight:900;color:#1a2e5a">COST EFFECTIVE MAINTENANCE</div>
+    <div style="font-size:9px;color:#6b7280">Unit 1/18 Boron St, Sumner Park QLD 4074 · (07) 3376 6188 · ABN 59 635 953 301</div></div>
+    <div style="margin-left:auto;font-size:9px;color:#6b7280;text-align:right">Generated:<br>${ts}</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#f0f2f5;border-radius:6px;padding:10px 12px;margin-bottom:12px">
+    ${[['Completed By',insp],['Week Commencing',week],['Shift / Area',shift],['Items Answered',done+'/'+total]].map(([l,v])=>`<div><div style="font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:2px">${l}</div><div style="font-size:12px;font-weight:700;color:#1a2e5a">${v}</div></div>`).join('')}
+  </div>
+  <div style="padding:8px 14px;border-radius:6px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:${c.fail>0?'#fef2f2':c.warn>0?'#fffbeb':'#f0fdf4'};border:1px solid ${c.fail>0?'#fecaca':c.warn>0?'#fde68a':'#bbf7d0'}">
+    <span style="font-size:13px;font-weight:800;color:${sc}">${slbl}</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#dcfce7;color:#1a9e52;border:1px solid #bbf7d0">✔ ${c.ok} OK</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#fef3c7;color:#d97706;border:1px solid #fde68a">⚠ ${c.warn} Actions</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#fee2e2;color:#dc2626;border:1px solid #fecaca">✘ ${c.fail} Fails</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb">— ${c.na} N/A</span>
+    </div>
+  </div>
+  <h3>👷 Staff on Site</h3>
+  <div style="margin-bottom:12px">${staffBadges||'<span style="font-size:10px;color:#9ca3af">No staff added</span>'}</div>
+  ${fails.length||warns.length?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px"><div><h3 style="color:#dc2626">⛔ Fail Items</h3>${failsHTML}</div><div><h3 style="color:#d97706">⚠ Action Items</h3>${warnsHTML}</div></div>`:''}
+  <h3>📋 Full Checklist</h3>
+  <div style="margin-bottom:12px">${checklistPDF}</div>
+  ${gc?`<h3>💬 General Comments</h3><div style="background:#f9fafb;border:1px solid #dde1e9;border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.6;white-space:pre-wrap;margin-bottom:12px">${gc}</div>`:''}
+  <h3>✍️ Signatures</h3>
+  <div style="margin-bottom:12px;page-break-inside:avoid"><table style="width:100%;border-collapse:collapse">${sigRows}</table></div>
+  <div style="margin-top:18px;padding-top:10px;border-top:1px solid #dde1e9;font-size:9px;color:#9ca3af;text-align:center">Cost Effective Maintenance · Weekly Safety Checklist · ${ts} · QLD WHS Act 2011</div>
+  </body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const win=window.open(url,'_blank');
+  if(win) win.addEventListener('load',()=>setTimeout(()=>win.print(),600));
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 
 function resetAll(){
