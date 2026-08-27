@@ -125,21 +125,33 @@ if(!TASK || !STAFF.length){
 
 async function loadTask(){
   try{
-    const r = await cuFetch(`/list/901616658760/task?order_by=created&reverse=true`);
+    document.getElementById('main').innerHTML = '<div class="loading"><div class="spin-lg"></div>Fetching checklist from ClickUp…</div>';
+    
+    const url = `https://cem-clickup.matt-appleby.workers.dev/list/901616658760/task?order_by=created&reverse=true`;
+    const r = await fetch(url);
+    
+    if(!r.ok){
+      const txt = await r.text();
+      throw new Error(`Worker returned ${r.status}: ${txt.substring(0,200)}`);
+    }
+    
     const d = await r.json();
-    if(!r.ok) throw new Error(d.err || 'HTTP '+r.status);
+    const tasks = d.tasks||[];
+    
+    if(!tasks.length){
+      throw new Error('No tasks found in list. Please submit the checklist first.');
+    }
 
-    // Find the task matching our TASK ID
-    const task = (d.tasks||[]).find(t=>t.id===TASK);
-    if(!task) throw new Error('Checklist not found. The signing link may be outdated.');
+    const task = tasks.find(t=>t.id===TASK);
+    if(!task){
+      throw new Error(`Task ${TASK} not found in list. Found: ${tasks.map(t=>t.id).join(', ')}`);
+    }
 
     taskDesc = task.description||'';
 
-    // Parse score from description
     const sm = taskDesc.match(/✔(\d+) ⚠(\d+) ✘(\d+) —(\d+)/);
     if(sm) taskCounts = {ok:+sm[1],warn:+sm[2],fail:+sm[3],na:+sm[4]};
 
-    // Parse who has already signed
     const alreadySigned = [];
     STAFF.forEach(name=>{
       if(taskDesc.includes(name+': ✅')) alreadySigned.push(name);
@@ -147,7 +159,7 @@ async function loadTask(){
 
     render(alreadySigned);
   }catch(e){
-    showError('Could Not Load Checklist','Error: '+e.message+'<br><br>Please check your internet connection and try again.');
+    showError('Could Not Load Checklist', e.message + '<br><br>Please screenshot this error and send to your manager.');
   }
 }
 
